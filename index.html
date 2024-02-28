@@ -1,0 +1,56 @@
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <title>Tic Tac Toe</title>
+</head>
+<body>
+<button class="startClear stateStart" Id=startClear onClick="startClear(this)">Start</button>
+
+<div class="gameboard">
+    <button class="cell" Id=0 onclick="tryMakeMove(0)"></button>
+    <button class="cell" Id=1 onclick="tryMakeMove(1)"></button>
+    <button class="cell" Id=2 onclick="tryMakeMove(2)"></button>
+    <button class="cell" Id=3 onclick="tryMakeMove(3)"></button>
+    <button class="cell" Id=4 onclick="tryMakeMove(4)"></button>
+    <button class="cell" Id=5 onclick="tryMakeMove(5)"></button>
+    <button class="cell" Id=6 onclick="tryMakeMove(6)"></button>
+    <button class="cell" Id=7 onclick="tryMakeMove(7)"></button>
+    <button class="cell" Id=8 onclick="tryMakeMove(8)"></button>
+</div>
+<script defer>
+    let game = null;
+    const moveDict = (() => {
+        let moveDict = {};
+        let count = 0;
+        for (let i = 0; i < 3; i++) {
+            for (let j = 0; j < 3; j++) {
+                moveDict[count] = [i, j];
+                count++;
+            }
+        }
+        return moveDict;
+    })();
+
+    document.addEventListener('DOMContentLoaded', function () {
+        game = new TicTacToe();
+    });
+
+    const changeText = (id, newText) => {
+        document.getElementById(id).innerText = newText;
+    };
+
+    const tryMakeMove = (move) => {
+        const currentPlayer = game.getCurrentPlayer();
+        const [row, col] = moveDict[move];
+        const isValidMove = game.makeMove(row, col);
+        if (!isValidMove) {
+            return;
+        }
+
+        changeText(move.toString(), currentPlayer);
+
+    };
+</script>
+<script src="app.js"></script>
+</body>
+</html>
