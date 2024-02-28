@@ -1,22 +1,24 @@
 <html>
 <head>
     <link rel="stylesheet" type="text/css" href="style.css">
+    <script src="app.js"></script>
     <title>Tic Tac Toe</title>
 </head>
 <body>
 <button class="startClear stateStart" Id=startClear onClick="startClear(this)">Start</button>
 
 <div class="gameboard">
-    <button class="cell" Id=0 onclick="tryMakeMove(0)"></button>
-    <button class="cell" Id=1 onclick="tryMakeMove(1)"></button>
-    <button class="cell" Id=2 onclick="tryMakeMove(2)"></button>
-    <button class="cell" Id=3 onclick="tryMakeMove(3)"></button>
-    <button class="cell" Id=4 onclick="tryMakeMove(4)"></button>
-    <button class="cell" Id=5 onclick="tryMakeMove(5)"></button>
-    <button class="cell" Id=6 onclick="tryMakeMove(6)"></button>
-    <button class="cell" Id=7 onclick="tryMakeMove(7)"></button>
-    <button class="cell" Id=8 onclick="tryMakeMove(8)"></button>
+    <button class="cell" Id=0></button>
+    <button class="cell" Id=1></button>
+    <button class="cell" Id=2></button>
+    <button class="cell" Id=3></button>
+    <button class="cell" Id=4></button>
+    <button class="cell" Id=5></button>
+    <button class="cell" Id=6></button>
+    <button class="cell" Id=7></button>
+    <button class="cell" Id=8></button>
 </div>
+
 <script defer>
     let game = null;
     const moveDict = (() => {
@@ -31,26 +33,116 @@
         return moveDict;
     })();
 
-    document.addEventListener('DOMContentLoaded', function () {
-        game = new TicTacToe();
-    });
-
     const changeText = (id, newText) => {
         document.getElementById(id).innerText = newText;
     };
 
+    const sleep = async (ms = 2000) => {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
     const tryMakeMove = (move) => {
+        if (game.isGameOver()) {
+            return false;
+        }
+
         const currentPlayer = game.getCurrentPlayer();
         const [row, col] = moveDict[move];
-        const isValidMove = game.makeMove(row, col);
+        console.log("row: " + row + " col: " + col);
+        const isValidMove = game.isValidMove(row, col);
         if (!isValidMove) {
+            return false;
+        }
+        game.makeMove(row, col);
+        changeText(move.toString(), currentPlayer);
+
+        const result = game.checkWinner();
+        let alertMessage = '';
+        if (result === Result.UNDETERMINED) {
+            return;
+        } else if (result === Result.TIE) {
+            alertMessage = "It's a draw.";
+        } else {
+            alertMessage = `Player ${ currentPlayer } wins!`;
+            for (const cellId of result) {
+                document.getElementById(cellId).classList.add("winningCell");
+            }
+        }
+
+        sleep(600).then(() => {
+            alert(alertMessage);
+        });
+
+        return true;
+    };
+
+    const tryBotMove = () => {
+        console.log("in Try Bot")
+        sleep(1000).then(() => {
+            const botMove = game.generateRandomMove();
+            tryMakeMove(botMove);
+        });
+        console.log("print board");
+        game.printBoard();
+    }
+
+    const initiateTurn = (move) => {
+        if (game === null) {
+            return;
+        }
+        if (!game.getIsPlayerTurn()) {
             return;
         }
 
-        changeText(move.toString(), currentPlayer);
-
+        tryMakeMove(move);
+        if (game.getIsPlayerTurn()) {
+            // If still player's turn, player goes twice
+            // This skips the bot's turn
+            return;
+        }
+        tryBotMove();
     };
+
+    const startClear = (e) => {
+        if (e.innerText === "Start") {
+            game = new TicTacToe();
+
+            if (!game.getIsPlayerTurn()) {
+                tryBotMove();
+                tryBotMove();
+            }
+
+            e.innerText = "Clear";
+            e.classList.remove("stateStart");
+            e.classList.add("stateClear");
+
+        } else if (e.innerText === "Clear") {
+            game = null;
+
+            const buttons = document.querySelectorAll('.cell');
+            buttons.forEach(button => {
+                button.innerText = '';
+                if (button.classList.contains("winningCell")) {
+                    button.classList.remove("winningCell");
+                }
+            });
+
+            e.innerText = "Start";
+            e.classList.remove("stateClear");
+            e.classList.add("stateStart");
+        }
+
+        const buttons = document.querySelectorAll('.cell');
+        buttons.forEach(button => {
+            button.addEventListener("click", function () {
+                initiateTurn(parseInt(button.id));
+            });
+        });
+
+        document.addEventListener('DOMContentLoaded', async function () {
+        });
+    }
 </script>
-<script src="app.js"></script>
+<!--<script src="app.js"></script>-->
 </body>
 </html>

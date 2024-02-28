@@ -1,23 +1,23 @@
 .startClear {
-  margin-bottom: 20px;
+  margin-bottom: 10px;
   border: none;
   height: 30px;
   width: 60px;
   border-radius: 8px;
+  color: white;
 }
 
 .stateStart {
   background-color: #16a34a;
-  color: white;
 }
 
 .stateClear {
   background-color: #dc2626;
-  color: white;
 }
 
 .gameboard {
   display: grid;
+  gap: 3px;
   grid-template-columns: repeat(3, 1fr);
   height: 100px;
   width: 75px;
@@ -31,6 +31,16 @@
   width: 40px;
   height: 40px;
   align-items: center;
-  background-color: #ffffff;
-  border: 1px solid #929292;
+  background-color: #efefef;
+  color: black;
+  border-radius: 6px;
+  border: none;
+}
+
+.winningCell {
+  background-color: #dc2626;
+  color: white;
+  transition-property: background-color, color;
+  transition-duration: 0.5s;
+  transition-timing-function: ease-in-out;
 }
